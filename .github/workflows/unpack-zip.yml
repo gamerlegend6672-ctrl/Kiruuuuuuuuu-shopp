@@ -1,10 +1,8 @@
+
 name: Extract KIRUU SHOP ZIP
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - "KIRUU-SHOP.zip"
 
 permissions:
   contents: write
@@ -13,18 +11,23 @@ jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
 
-      - name: Extract ZIP
+      - name: Rebuild and extract ZIP
         run: |
-          unzip -q KIRUU-SHOP.zip -d /tmp/kiruu
-          cp -a /tmp/kiruu/KIRUU-SHOP/. .
-          rm KIRUU-SHOP.zip
+          cat KIRUU-SHOP.part* > /tmp/KIRUU-SHOP.zip
+          unzip -tq /tmp/KIRUU-SHOP.zip
+          mkdir -p /tmp/kiruu-unpack
+          unzip -q /tmp/KIRUU-SHOP.zip -d /tmp/kiruu-unpack
+          test -d /tmp/kiruu-unpack/KIRUU-SHOP
+          cp -a /tmp/kiruu-unpack/KIRUU-SHOP/. .
+          rm -f KIRUU-SHOP.part*
 
-      - name: Save files
+      - name: Commit extracted files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Add KIRUU SHOP project"
+          git commit -m "Extract KIRUU SHOP project files" || echo "No changes to commit"
           git push
