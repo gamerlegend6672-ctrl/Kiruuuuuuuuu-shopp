@@ -1,0 +1,30 @@
+name: Extract KIRUU SHOP ZIP
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "KIRUU-SHOP.zip"
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract ZIP
+        run: |
+          unzip -q KIRUU-SHOP.zip -d /tmp/kiruu
+          cp -a /tmp/kiruu/KIRUU-SHOP/. .
+          rm KIRUU-SHOP.zip
+
+      - name: Save files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add KIRUU SHOP project"
+          git push
