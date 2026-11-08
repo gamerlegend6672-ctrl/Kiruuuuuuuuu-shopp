@@ -11,8 +11,7 @@ jobs:
   extract:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Rebuild and extract ZIP
         run: |
@@ -21,7 +20,7 @@ jobs:
           mkdir -p /tmp/kiruu-unpack
           unzip -q /tmp/KIRUU-SHOP.zip -d /tmp/kiruu-unpack
           test -d /tmp/kiruu-unpack/KIRUU-SHOP
-          cp -a /tmp/kiruu-unpack/KIRUU-SHOP/. .
+          find /tmp/kiruu-unpack/KIRUU-SHOP -mindepth 1 -maxdepth 1 ! -name .github -exec cp -a {} . \;
           rm -f KIRUU-SHOP.part*
 
       - name: Commit extracted files
@@ -29,5 +28,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Extract KIRUU SHOP project files" || echo "No changes to commit"
+          git commit -m "Extract KIRUU SHOP project files"
           git push
